@@ -22,6 +22,10 @@ webcam, automatically verifies that a fixed set of required assets is
 present, flags anything missing, and warns about unexpected/foreign objects
 on the desk — all through a simple desktop interface.
 
+## Why DeskGuard?
+
+DeskGuard automates workspace readiness verification using computer vision, reducing manual inspection and providing instant feedback on missing or unexpected items. It demonstrates a practical application of AI in office automation.
+
 ## Proposed Solution
 
 DeskGuard runs a pretrained object detection model on a live webcam feed,
@@ -121,7 +125,7 @@ undetected or get mislabeled as the visually closest COCO class — see
 
 1. **Clone the repository**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/Dhakshitha178/DeskGuard-TriSightAI.git
    cd DeskGuard-TriSightAI
    ```
 
