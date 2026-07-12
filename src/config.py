@@ -24,7 +24,7 @@ SCREENSHOTS_DIR = BASE_DIR / "screenshots"
 # ----------------------------
 MODEL_NAME = "yolov8n.pt"          # placeholder, update once model is finalized
 MODEL_PATH = ASSETS_DIR / "models" / MODEL_NAME
-CONFIDENCE_THRESHOLD = 0.5
+CONFIDENCE_THRESHOLD = 0.30
 IOU_THRESHOLD = 0.45
 
 # ----------------------------
