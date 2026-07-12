@@ -123,6 +123,7 @@ def draw_detections(frame, detections: List[Dict[str, Any]]):
 def save_screenshot(frame, prefix: str = "capture") -> Path:
     """Save the given frame to the screenshots/ directory with a timestamped name."""
     filename = f"{prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    config.SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
     filepath = config.SCREENSHOTS_DIR / filename
     cv2.imwrite(str(filepath), frame)
     logger.info(f"Screenshot saved: {filepath}")
