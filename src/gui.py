@@ -172,7 +172,7 @@ class MainWindow(QMainWindow):
         detected item's confidence score.
         """
         status_text = self._format_verification_message(summary, detections)
-        self.status_box.append(status_text)
+        self.status_box.setPlainText(status_text)
 
     @staticmethod
     def _build_confidence_lookup(detections: list) -> dict:
