@@ -216,3 +216,34 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Model weights (large binary files)
+assets/models/*.pt
+assets/models/*.onnx
+
+# Runtime-generated output
+output/*
+!output/.gitkeep
+
+# Screenshots (unless intentionally versioned)
+screenshots/*
+!screenshots/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
