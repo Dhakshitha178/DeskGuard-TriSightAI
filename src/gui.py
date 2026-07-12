@@ -28,7 +28,7 @@ from loguru import logger
 
 from src import config, utils
 from src.detector import AssetDetector
-from src.verifier import AssetVerifier
+from src.verifier import AssetVerifier, REQUIRED_ASSETS
 
 
 class MainWindow(QMainWindow):
@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
         self._current_frame = frame
 
         summary = self.verifier.verify(detections)
-        self._display_status(summary)
+        self._display_status(summary, detections)
         self._display_frame(frame)
 
     def _display_frame(self, frame) -> None:
@@ -164,33 +164,74 @@ class MainWindow(QMainWindow):
         )
         self.video_label.setPixmap(pixmap)
 
-    def _display_status(self, summary: dict) -> None:
+    def _display_status(self, summary: dict, detections: list) -> None:
         """
         Render the structured verification result returned by
         AssetVerifier.verify() into the four DeskGuard status formats:
-        Ready / Not Ready / Ready with Warnings.
+        Ready / Not Ready / Ready with Warnings - including each
+        detected item's confidence score.
         """
-        status_text = self._format_verification_message(summary)
-        self.status_box.setPlainText(status_text)
+        status_text = self._format_verification_message(summary, detections)
+        self.status_box.append(status_text)
 
     @staticmethod
-    def _format_verification_message(summary: dict) -> str:
+    def _build_confidence_lookup(detections: list) -> dict:
+        """
+        Build a {label: best_confidence} map from raw detections.
+        Labels are lowercased/stripped to match AssetVerifier's own
+        normalization, and if the same label appears more than once
+        the highest confidence score is kept.
+        """
+        confidence_by_label: dict = {}
+        for det in detections:
+            label = str(det.get("label", "")).strip().lower()
+            if not label:
+                continue
+            confidence = float(det.get("confidence", 0.0))
+            if label not in confidence_by_label or confidence > confidence_by_label[label]:
+                confidence_by_label[label] = confidence
+        return confidence_by_label
+
+    @classmethod
+    def _format_verification_message(cls, summary: dict, detections: list) -> str:
         """Build the display text for a verification result, per DeskGuard's
-        four defined cases (Ready / Not Ready / Ready with Warnings)."""
-        detected_assets = summary.get("detected_assets", [])
+        four defined cases (Ready / Not Ready / Ready with Warnings),
+        with each detected item's confidence score shown alongside it.
+
+        Note: confidence is display-only here - it plays no part in the
+        PASS/FAIL decision itself, which AssetVerifier computes purely
+        from presence/absence (per DeskGuard rule: "ignore confidence
+        scores while verifying").
+        """
         missing_assets = summary.get("missing_assets", [])
         unexpected_objects = summary.get("unexpected_objects", [])
         status = summary.get("status")
 
-        detected_block = (
-            "\n".join(f"\u2713 {name}" for name in detected_assets) or "None"
-        )
+        confidence_by_label = cls._build_confidence_lookup(detections)
+
+        # Detected required assets, with the confidence of whichever raw
+        # label satisfied that requirement (e.g. "laptop" or "monitor"
+        # for the Laptop/Monitor requirement).
+        detected_lines = []
+        for info in REQUIRED_ASSETS.values():
+            matched_labels = info["labels"] & confidence_by_label.keys()
+            if not matched_labels:
+                continue
+            best_label = max(matched_labels, key=lambda l: confidence_by_label[l])
+            confidence_pct = confidence_by_label[best_label] * 100
+            detected_lines.append(f"\u2713 {info['display']} ({confidence_pct:.0f}%)")
+
         missing_block = (
             "\n".join(f"- {name}" for name in missing_assets) or "None"
         )
         unexpected_block = (
-            "\n".join(f"- {name}" for name in unexpected_objects) or "None"
+            "\n".join(
+                f"- {label} ({confidence_by_label.get(label, 0.0) * 100:.0f}%)"
+                for label in unexpected_objects
+            )
+            or "None"
         )
+        detected_block = "\n".join(detected_lines) or "None"
 
         if status == "READY":
             header = "\U0001F7E2 Workspace Ready"
