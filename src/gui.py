@@ -97,7 +97,8 @@ class MainWindow(QMainWindow):
     # ----------------------------
     def start_monitoring(self) -> None:
         try:
-            self.detector.load_model()
+            if self.detector.model is None:
+                self.detector.load_model()
         except Exception as e:
             self.status_box.append(f"[ERROR] Could not load model: {e}")
             return
