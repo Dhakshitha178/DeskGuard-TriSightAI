@@ -263,6 +263,30 @@ DeskGuard-TriSightAI/
 
 ---
 
+## 📸 Application Screenshots
+
+### 🏠 1. DeskGuard Home Screen
+
+The application launches with a clean and user-friendly PyQt5 graphical interface. It provides a live webcam feed, a workspace verification status panel, and control buttons to start monitoring, stop monitoring, and save screenshots.
+
+![DeskGuard Home Screen](images/homescreen.png)
+
+
+### ✅ 2. Workspace Verification
+
+The system performs real-time object detection using YOLOv8 and verifies the detected assets against the predefined workspace requirements. In this example, the keyboard, mouse, and water bottle are detected successfully, while the laptop/monitor is missing. Therefore, the workspace is classified as **Workspace Not Ready**.
+
+![Workspace Verification](images/workspace_verification.png)
+
+
+### ⚠️ 3. Unexpected Object Detection
+
+Along with the required workspace assets, the system also identifies unexpected objects that are not part of the predefined asset list. In this example, a **cell phone** is detected and reported separately, demonstrating the effectiveness of the asset verification engine.
+
+![Unexpected Object Detection](images/unexpected_output.png)
+
+---
+
 ## Team & Ownership
 
 | Member | Primary Ownership |
