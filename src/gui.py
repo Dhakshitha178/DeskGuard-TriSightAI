@@ -171,7 +171,7 @@ class MainWindow(QMainWindow):
         Ready / Not Ready / Ready with Warnings.
         """
         status_text = self._format_verification_message(summary)
-        self.status_box.append(status_text)
+        self.status_box.setPlainText(status_text)
 
     @staticmethod
     def _format_verification_message(summary: dict) -> str:
