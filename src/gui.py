@@ -236,11 +236,11 @@ class MainWindow(QMainWindow):
 
         if status == "READY":
             header = "\U0001F7E2 Workspace Ready"
-            footer = "Everything is set for the work to be done."
+            footer = "All required assets are present.You may begin working."
         elif status == "READY_WITH_WARNINGS":
             header = "\U0001F7E1 Workspace Ready with Warnings"
             footer = (
-                "Everything is set for the work to be done.\n\n"
+                "All required assets are present.You may begin working.\n\n"
                 "Warning:\n"
                 "Unexpected objects detected on the workspace."
             )
