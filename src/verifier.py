@@ -145,4 +145,10 @@ class AssetVerifier:
             "unexpected_objects": ", ".join(result["unexpected_objects"]) or "-",
         }
         utils.append_verification_log(row)
-        logger.info(f"Verification result: {result['status']} | {row}")
+        logger.info(
+            "Status={} Detected={} Missing={} Unexpected={}",
+            result["status"],
+            result["detected_assets"],
+            result["missing_assets"],
+            result["unexpected_objects"],
+        )
