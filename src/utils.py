@@ -10,7 +10,6 @@ Shared helper functions used across the DeskGuard system:
 
 Owned primarily by: Harini (with contributions from all members)
 """
-
 import csv
 import json
 from datetime import datetime
