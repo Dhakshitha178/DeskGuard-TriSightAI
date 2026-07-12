@@ -165,12 +165,61 @@ class MainWindow(QMainWindow):
         self.video_label.setPixmap(pixmap)
 
     def _display_status(self, summary: dict) -> None:
-        status_text = (
-            f"[{utils.get_timestamp()}] Status: {summary['status']}\n"
-            f"  Missing: {summary['missing'] or 'None'}\n"
-            f"  Unexpected: {summary['unexpected'] or 'None'}\n"
-        )
+        """
+        Render the structured verification result returned by
+        AssetVerifier.verify() into the four DeskGuard status formats:
+        Ready / Not Ready / Ready with Warnings.
+        """
+        status_text = self._format_verification_message(summary)
         self.status_box.append(status_text)
+
+    @staticmethod
+    def _format_verification_message(summary: dict) -> str:
+        """Build the display text for a verification result, per DeskGuard's
+        four defined cases (Ready / Not Ready / Ready with Warnings)."""
+        detected_assets = summary.get("detected_assets", [])
+        missing_assets = summary.get("missing_assets", [])
+        unexpected_objects = summary.get("unexpected_objects", [])
+        status = summary.get("status")
+
+        detected_block = (
+            "\n".join(f"\u2713 {name}" for name in detected_assets) or "None"
+        )
+        missing_block = (
+            "\n".join(f"- {name}" for name in missing_assets) or "None"
+        )
+        unexpected_block = (
+            "\n".join(f"- {name}" for name in unexpected_objects) or "None"
+        )
+
+        if status == "READY":
+            header = "\U0001F7E2 Workspace Ready"
+            footer = "Everything is set for the work to be done."
+        elif status == "READY_WITH_WARNINGS":
+            header = "\U0001F7E1 Workspace Ready with Warnings"
+            footer = (
+                "Everything is set for the work to be done.\n\n"
+                "Warning:\n"
+                "Unexpected objects detected on the workspace."
+            )
+        else:  # NOT_READY
+            header = "\U0001F534 Workspace Not Ready"
+            if missing_assets and unexpected_objects:
+                footer = (
+                    "Please place the missing assets and remove unexpected "
+                    "objects before starting work."
+                )
+            else:
+                footer = "Please place the missing assets before starting work."
+
+        return (
+            f"[{utils.get_timestamp()}]\n"
+            f"{header}\n\n"
+            f"Detected Assets:\n{detected_block}\n\n"
+            f"Missing Assets:\n{missing_block}\n\n"
+            f"Unexpected Objects:\n{unexpected_block}\n\n"
+            f"{footer}\n"
+        )
 
     def closeEvent(self, event) -> None:
         self.stop_monitoring()
